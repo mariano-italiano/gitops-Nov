@@ -3,9 +3,10 @@ kind: Deployment
 metadata:
   labels:
     app: test-nginx-web
+    zone: az1
   name: test-nginx-web
 spec:
-  replicas: 3
+  replicas: 5
   selector:
     matchLabels:
       app: test-nginx-web
