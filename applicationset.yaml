@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: nginx-list
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - list:
+        elements:
+          - cluster: in-cluster
+            env: dev
+            zone: az1
+          - cluster: k3s2
+            env: prod
+            zone: az2
+  template:
+    metadata:
+      name: 'nginx-{{.zone}}-{{.env}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/mariano-italiano/gitops.git
+        targetRevision: HEAD
+        path: apps/nginx-multi
+      destination:
+        name: '{{.cluster}}'
+        namespace: 'nginx-{{.env}}'
+      syncPolicy:
+        automated: {}
+        syncOptions:
+          - CreateNamespace=true
